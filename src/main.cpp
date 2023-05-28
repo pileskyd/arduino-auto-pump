@@ -17,9 +17,9 @@ iarduino_4LED dispLED(2, 3);   // Дисплей
 const uint8_t maxPumpTime = 90;          // Максимальное время работы насоса
 const uint8_t arrMode[3] = {12, 24, 36}; // Таймеры/режимы полива
 
-uint8_t pumpTime = 5;         // Длительность полива (время работы насоса)
-int selectedTimer = 0;        // Выбранный таймер (от 0 до 2)
-unsigned long timeSketch = 0; // Время со старта
+uint8_t pumpTime = 5;   // Длительность полива (время работы насоса)
+int selectedTimer = 0;  // Выбранный таймер (от 0 до 2)
+unsigned long time = 0; // Время со старта
 enum ButtonState
 {
   bs_nothing,               // Нет активности на кнопках
@@ -120,23 +120,26 @@ void exitAndOpenModeMenu() // Выход и открывается меню
 
 void selectMode() // Главное меню, выбор режимов выполнения
 {
-  dispLED.print('0000');
-
+  dispLED.print('HI');
   switch (btnState)
   {
   case bs_buttonsClampedFast:
+    Serial.println("Open: pm_wateringFrequency");
     programMode = pm_wateringFrequency; // Меню настройки частоты полива
     break;
 
   case bs_buttonsClampedAverage:
+    Serial.println("Open: pm_wateringTime");
     programMode = pm_wateringTime; // Меню настройки длительности полива
     break;
 
   case bs_buttonsClampedLong:
+    Serial.println("Open: wateringFrequency");
     programMode = pm_watering; // Запуск полива
     break;
 
   case bs_buttonsClamped:
+    Serial.println("Open: pm_selectMode");
     programMode = pm_selectMode; // Выход в меню
     break;
   }
@@ -180,16 +183,24 @@ void wateringTime() // Меню настройки длительности п
 
   exitAndOpenModeMenu();
 
-  dispLED.print((abs(i) % 3) + 1);
   pumpTime = abs(i) % maxPumpTime;
+  dispLED.print(pumpTime);
 }
 
 void watering() // Полив (запуск/таймер и запуск насоса)
 {
-  exitAndOpenModeMenu();
+  uint32_t sec = time / 1000ul;         // полное количество секунд
+  int timeHours = (sec / 3600ul);       // часы
+  int timeMins = (sec % 3600ul) / 60ul; // минуты
+  int timeSecs = (sec % 3600ul) % 60ul; // секунды
+
+  dispLED.clear();
+  dispLED.print(timeMins);
 
   // Описываем действия для старта
   // таймер смотрит время запуска скетча и когда проходит час X то вызывает action, который обнуляет таймер
+
+  exitAndOpenModeMenu();
 }
 
 // ================= Работа насоса =================
@@ -216,7 +227,7 @@ void setup()
 
 void loop()
 {
-  timeSketch = millis();       // Текущее время со старта
+  time = millis();             // Текущее время со старта
   btnState = getButtonState(); // Определяем режим кнопки
 
   switch (programMode)
