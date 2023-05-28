@@ -131,7 +131,7 @@ void exitAndOpenModeMenu() // Выход и открывается меню
 
 void selectMode() // Главное меню, выбор режимов выполнения
 {
-  dispLED.print("STAR");
+  dispLED.print("SELE");
   switch (btnState)
   {
   case bs_buttonsClampedFast:
