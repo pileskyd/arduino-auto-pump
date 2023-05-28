@@ -194,7 +194,7 @@ void wateringTime() // Меню настройки длительности п
 
   exitAndOpenModeMenu();
 
-  pumpTime = abs(i) % maxPumpTime;
+  pumpTime = abs(i) % maxPumpTime + 1;
   dispLED.print(pumpTime);
 }
 
