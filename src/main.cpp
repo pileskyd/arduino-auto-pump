@@ -216,7 +216,8 @@ void setup()
 
 void loop()
 {
-  timeSketch = millis(); // Текущее время со старта
+  timeSketch = millis();       // Текущее время со старта
+  btnState = getButtonState(); // Определяем режим кнопки
 
   switch (programMode)
   {
@@ -236,9 +237,4 @@ void loop()
     selectMode();
     break;
   }
-}
-
-void yield()
-{
-  btnState = getButtonState(); // Определяем режим кнопки
 }
