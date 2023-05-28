@@ -237,13 +237,6 @@ void loop()
   time = millis();             // Текущее время со старта
   btnState = getButtonState(); // Определяем режим кнопки
 
-  // For Dev test
-  int a = Serial.parseInt();
-  if (a == 101)
-  {
-    programMode = pm_watering;
-  }
-
   switch (programMode)
   {
   case pm_wateringFrequency:
