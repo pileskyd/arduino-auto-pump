@@ -17,9 +17,6 @@ iarduino_4LED dispLED(2, 3);   // Дисплей
 const uint8_t maxPumpTime = 90;          // Максимальное время работы насоса
 const uint8_t arrMode[3] = {12, 24, 36}; // Таймеры/режимы полива
 
-uint8_t pumpTime = 5;   // Длительность полива (время работы насоса)
-int selectedTimer = 0;  // Выбранный таймер (от 0 до 2)
-unsigned long time = 0; // Время со старта
 enum ButtonState
 {
   bs_nothing,               // Нет активности на кнопках
@@ -30,7 +27,7 @@ enum ButtonState
   bs_buttonsClampedLong,    // Выбор третьего меню
   bs_buttonsClamped,        // Открыть главное меню
 };
-ButtonState btnState; // Состояние кнопок
+
 enum ProgramMode
 {
   pm_selectMode,        // Выбор режима выполнения
@@ -39,6 +36,10 @@ enum ProgramMode
   pm_watering,          // Запуск полива
 };
 
+uint8_t pumpTime = 5;    // Длительность полива (время работы насоса)
+int selectedTimer = 1;   // Выбранный таймер (от 0 до 2)
+unsigned long time = 0;  // Время со старта
+ButtonState btnState;    // Состояние кнопок
 ProgramMode programMode; // Режим программы
 
 // ================= Работа с кнопками =================
@@ -195,10 +196,15 @@ void watering() // Полив (запуск/таймер и запуск нас�
   int timeSecs = (sec % 3600ul) % 60ul; // секунды
 
   dispLED.clear();
-  dispLED.print(timeSecs);
+  dispLED.print(timeHours, timeMins, TIME); // Вывод времени
 
-  // Описываем действия для старта
-  // таймер смотрит время запуска скетча и когда проходит час X то вызывает action, который обнуляет таймер
+  if (timeHours != 0 && timeHours != 0 && timeSecs == 0 && timeMins == 0)
+  {
+    if (timeHours % arrMode[selectedTimer] == 0)
+    {
+      action();
+    }
+  }
 
   exitAndOpenModeMenu();
 }
@@ -207,6 +213,7 @@ void watering() // Полив (запуск/таймер и запуск нас�
 
 void action() // Работа насоса в момент полива
 {
+  Serial.println("Run pump action");
   digitalWrite(pinPump, HIGH);
   delay(pumpTime * k);
   digitalWrite(pinPump, LOW);
@@ -229,6 +236,13 @@ void loop()
 {
   time = millis();             // Текущее время со старта
   btnState = getButtonState(); // Определяем режим кнопки
+
+  // For Dev test
+  int a = Serial.parseInt();
+  if (a == 101)
+  {
+    programMode = pm_watering;
+  }
 
   switch (programMode)
   {
