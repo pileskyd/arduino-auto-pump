@@ -42,6 +42,16 @@ unsigned long time = 0;  // Время со старта
 ButtonState btnState;    // Состояние кнопок
 ProgramMode programMode; // Режим программы
 
+// ================= Работа насоса =================
+
+void action() // Работа насоса в момент полива
+{
+  Serial.println("Run pump action");
+  digitalWrite(pinPump, HIGH);
+  delay(pumpTime * k);
+  digitalWrite(pinPump, LOW);
+}
+
 // ================= Работа с кнопками =================
 
 ButtonState getButtonState() // Функция определения состояния кнопок
@@ -207,16 +217,6 @@ void watering() // Полив (запуск/таймер и запуск нас�
   }
 
   exitAndOpenModeMenu();
-}
-
-// ================= Работа насоса =================
-
-void action() // Работа насоса в момент полива
-{
-  Serial.println("Run pump action");
-  digitalWrite(pinPump, HIGH);
-  delay(pumpTime * k);
-  digitalWrite(pinPump, LOW);
 }
 
 // ================= Системные функции =================
