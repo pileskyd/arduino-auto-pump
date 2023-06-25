@@ -14,7 +14,7 @@ const uint8_t pinPump = 10;    // Насос
 iarduino_4LED dispLED(2, 3);   // Дисплей
 
 // Параметры полива
-const uint8_t maxPumpTime = 90;          // Максимальное время работы насоса
+const int maxPumpTime = 512;         // Максимальное время работы насоса
 const uint8_t arrMode[3] = {12, 24, 36}; // Таймеры/режимы полива
 
 enum ButtonState
@@ -36,7 +36,7 @@ enum ProgramMode
   pm_watering,          // Запуск полива
 };
 
-uint8_t pumpTime = 5;    // Длительность полива (время работы насоса)
+uint8_t pumpTime = 20;    // Длительность полива (время работы насоса)
 int selectedTimer = 1;   // Выбранный таймер (от 0 до 2)
 unsigned long time = 0;  // Время со старта
 ButtonState btnState;    // Состояние кнопок
@@ -236,6 +236,16 @@ void loop()
 {
   time = millis();             // Текущее время со старта
   btnState = getButtonState(); // Определяем режим кнопки
+
+  // For Dev
+  if (Serial.available())
+  {
+    char c = Serial.read();
+
+    if (c == 'x') {
+      action();
+    }
+  }
 
   switch (programMode)
   {
