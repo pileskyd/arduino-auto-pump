@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <iarduino_4LED.h>
+#include <EEManager.h>
 
 // ================= Константы и переменные =================
 
@@ -9,6 +10,7 @@ constexpr int hour = 60 * 60;
 
 // Внешние пины и устройства
 const uint8_t pinButtonA = 12; // Правая кнопка
+const uint8_t pinButtonB = 11; // Левая кнопка
 const uint8_t pinButtonB = 11; // Левая кнопка
 const uint8_t pinPump = 10;    // Насос
 iarduino_4LED dispLED(2, 3);   // Дисплей
