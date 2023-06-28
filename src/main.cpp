@@ -11,7 +11,6 @@ constexpr int hour = 60 * 60;
 // Внешние пины и устройства
 const uint8_t pinButtonA = 12; // Правая кнопка
 const uint8_t pinButtonB = 11; // Левая кнопка
-const uint8_t pinButtonB = 11; // Левая кнопка
 const uint8_t pinPump = 10;    // Насос
 iarduino_4LED dispLED(2, 3);   // Дисплей
 
@@ -38,7 +37,7 @@ enum ProgramMode
   pm_watering,          // Запуск полива
 };
 
-uint8_t pumpTime = 20;    // Длительность полива (время работы насоса)
+int pumpTime = 30;    // Длительность полива (время работы насоса)
 int selectedTimer = 1;   // Выбранный таймер (от 0 до 2)
 unsigned long time = 0;  // Время со старта
 ButtonState btnState;    // Состояние кнопок
@@ -173,30 +172,40 @@ void wateringFrequency() // Меню настройки частоты пол�
     i++;
   }
 
-  exitAndOpenModeMenu();
 
   selectedTimer = abs(i) % 3;
   dispLED.print(arrMode[selectedTimer]); // Выводим номер режима
+
+  if (btnState == bs_buttonsClamped)
+  {
+    EEPROM.put(0, selectedTimer);
+    programMode = pm_selectMode;
+  }
 }
 
 void wateringTime() // Меню настройки длительности полива
 {
-  uint8_t i = pumpTime;
+  int x = pumpTime;
   dispLED.clear();
 
   if (btnState == bs_leftClick)
   {
-    i--;
+    x--;
   }
 
   if (btnState == bs_rightClick)
   {
-    i++;
+    x++;
   }
 
-  exitAndOpenModeMenu();
+  pumpTime =  abs(x) % maxPumpTime;
 
-  pumpTime = abs(i) % maxPumpTime + 1;
+  if (btnState == bs_buttonsClamped)
+  {
+    EEPROM.put(4,  pumpTime); 
+    programMode = pm_selectMode;
+  }
+
   dispLED.print(pumpTime);
 }
 
@@ -232,6 +241,9 @@ void setup()
   pinMode(pinButtonB, INPUT); //  переводим вывод pinButtonB в режим входа
   pinMode(pinPump, OUTPUT);   //  переводим вывод pinPump    в режим выхода
   digitalWrite(pinPump, LOW); //  выключаем насос
+
+  Serial.println(EEPROM.get(0, selectedTimer));
+  Serial.println(EEPROM.get(4, pumpTime));
 }
 
 void loop()
